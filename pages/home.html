@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>UNICON19 Home</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;800&display=swap");
+
+    :root {
+      --primary: #e63946;
+      --secondary: #457b9d;
+      --accent: #1d3557;
+      --background: #f1faee;
+      --text: #1d3557;
+      --white: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Raleway", sans-serif;
+      min-height: 100vh;
+      background: var(--white);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* Header Styles */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: var(--white);
+    }
+
+    .logo {
+      height: 100px;
+      width: auto;
+      background: #ddd; /* Placeholder for logo */
+    }
+
+    .site-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .divider {
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      margin: 0 2rem;
+    }
+
+    .description {
+      padding: 2rem;
+      text-align: center;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .sections-container {
+      display: flex;
+      gap: 2rem;
+      padding: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .section {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 20px;
+      width: 300px;
+      position: relative;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .section:nth-child(odd) {
+      border-color: var(--primary);
+    }
+
+    .section:nth-child(even) {
+      border-color: var(--secondary);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .section-description {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: var(--text);
+    }
+
+    .section-button {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .section:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .section:hover .section-button {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <img src="logo.png" alt="UNICON 19 Logo" class="logo">
+    <h1 class="site-title">UNICON 19</h1>
+  </header>
+  
+  <div class="divider"></div>
+  
+  <div class="description-container">
+    <div class="description-content">
+      <p class="description-paragraph">
+        Ever since the first UNICON held in Syracuse, New York in 1984, UNICON has been a festival for unicyclists, bringing riders together in every discipline from around the world. This event is not only a competition, but also a convention for the International Unicycling Federation.
+        This year, UNICON returns to the Asia-Pacific region, Ansan, South Korea. We are excited and look forward to hosting you in our beautiful city.
+        Our team has put together a comprehensive guide to help you navigate the event. Explore the interactive maps, event durations, and more to make the most of your UNICON 19 experience.
+      </p>
+    </div>
+  </div>
+  
+  <style>
+  .description-container {
+      padding: 4rem 2rem;
+      background: #ffffff;
+  }
+  
+  .description-content {
+      max-width: 1200px;  /* Increased from 800px */
+      margin: 0 auto;
+  }
+  
+  .description-paragraph {
+      font-family: "Raleway", sans-serif;
+      font-size: 1.2rem;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+      color: var(--text);
+      text-align: left;
+  }
+  
+  .description-paragraph:last-child {
+      margin-bottom: 0;
+  }
+  
+  @media (max-width: 1300px) {
+      .description-content {
+          max-width: 90%;
+      }
+  }
+  </style>
+
+  <div class="sections-container">
+    <!-- World Participants Map Section -->
+    <div class="section animate__animated animate__fadeInLeft">
+      <div class="section-header">
+        <i class="fas fa-globe section-icon"></i>
+        <h2 class="section-title">Global Participation</h2>
+      </div>
+      <p class="section-description">
+        Explore our interactive choropleth map showing worldwide participation and winners from UNICON 19. Discover the global reach of unicycling championships.
+      </p>
+      <button class="section-button" onclick="window.location.href='index.html'">
+        View Map
+      </button>
+    </div>
+
+    <!-- Event Duration Section -->
+    <div class="section animate__animated animate__fadeInUp">
+      <div class="section-header">
+        <i class="fas fa-chart-pie section-icon"></i>
+        <h2 class="section-title">Event Duration</h2>
+      </div>
+      <p class="section-description">
+        Interactive pie chart with inner bar charts displaying event durations. Get detailed insights into competition timelines.
+      </p>
+      <button class="section-button" onclick="window.location.href='pie.html'">
+        View Chart
+      </button>
+    </div>
+
+    <!-- Venue Map Section -->
+    <div class="section animate__animated animate__fadeInRight">
+      <div class="section-header">
+        <i class="fas fa-map-marked-alt section-icon"></i>
+        <h2 class="section-title">Venues & Routes</h2>
+      </div>
+      <p class="section-description">
+        Comprehensive map showing all venues, lodging options, and travel routes. Plan your UNICON 19 experience with our interactive travel guide.
+      </p>
+      <button class="section-button" onclick="window.location.href='map.html'">
+        View Locations
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Add hover effect to sections
+    document.querySelectorAll('.section').forEach(section => {
+      section.addEventListener('mousemove', (e) => {
+        const rect = section.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+
+        const tiltX = (y - 0.5) * 10;
+        const tiltY = (x - 0.5) * -10;
+
+        section.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateZ(20px) translateY(-10px)`;
+      });
+
+      section.addEventListener('mouseleave', () => {
+        section.style.transform = '';
+      });
+    });
+  </script>
+</body>
+</html>
