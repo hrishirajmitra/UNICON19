@@ -1,91 +1,352 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>South Korea Submunicipalities Map</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <style>
-        #map {
-            height: 600px;
-        }
-        .leaflet-interactive {
-            transition: stroke-dashoffset 1s linear;
-        }
-    </style>
+  <title>South Korea Submunicipalities Map</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 1000px;
+    }
+    .leaflet-interactive {
+      transition: stroke-dashoffset 1s linear;
+    }
+    .toggle-button {
+      background-color: grey;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      margin: 2px 0;
+      display: block;
+      width: 100%;
+      text-align: left;
+    }
+    .toggle-button.active {
+      background-color: #4580c5;
+    }
+    .toggle-button.transport.active {
+      background-color: #bb3843;
+    }
+    .toggle-button.lodging.active {
+      background-color: #54a93b;
+    }
+    .toggle-button.route-button.active {
+      background-color: red;
+    }
+    #toggleContainer {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      padding: 5px;
+    }
+  </style>
 </head>
 <body>
-    <div id="map"></div>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        var map = L.map('map').setView([37.31960312541935, 126.81892247660237], 12);
+  <div id="map"></div>
+  <div id="toggleContainer">
+    <button id="toggleVenues" class="toggle-button">Show All Venues</button>
+    <button id="toggleTransport" class="toggle-button transport">Show All Transport</button>
+    <div id="transportRoutesContainer" style="display:none; margin-left:20px;">
+      <!-- Replaced single routes toggle with two buttons -->
+      <button id="toggleIncheonRoutes" class="toggle-button route-button">Routes from Incheon</button>
+      <button id="toggleGimpoRoutes" class="toggle-button route-button">Routes from Gimpo</button>      
+    </div>
+    <button id="toggleLodging" class="toggle-button lodging">Show All Lodging</button>
+  </div>
+  
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="../static/js/arc.js"></script>
+  
+  <script>
+    // Initialize the map
+    var map = L.map('map').setView([37.31960312541935, 126.81892247660237], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-        }).addTo(map);
+    // Define icons
+    var blueIcon = new L.Icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+    var redIcon = new L.Icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+    var greenIcon = new L.Icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
 
-        var marker1 = L.marker([37.4623941575982, 126.44255399390985]).addTo(map);
-        marker1.bindPopup("<b>Marker 1</b><br>Details about marker 1.");
+    // Define locations
+    var locations = [
+      { type: 'Transport', specifics: 'Airport', name: 'Incheon International Airport', lat: 37.48669961905564, lng: 126.51382125942646 },
+      { type: 'Transport', specifics: 'Bus stop', name: 'Incheon International Airport/ Stop 7A', lat: 37.48669961905564, lng: 126.51382125942500 },
+      { type: 'Transport', specifics: 'Bus stop', name: 'Ansan Bus Terminal', lat: 37.31705631699141, lng: 126.84690062084255 },
+      { type: 'Transport', specifics: 'Stadium', name: 'Wa stadium', lat: 37.31987748180103, lng: 126.81946574167756 },
+      { type: 'Transport', specifics: 'Train Station', name: 'Seoul Station', lat: 37.55481898267267, lng: 126.97201778352822 },
+      { type: 'Transport', specifics: 'Train Station', name: 'Gojan Station', lat: 37.317014388952295, lng: 126.82305835386012 },
+      { type: 'Transport', specifics: 'Airport', name: 'Gimpo international Airport', lat: 37.5656743404155, lng: 126.80168224778000 },
+      { type: 'Transport', specifics: 'Bus stop', name: 'Gimpo international Airport/ Stop 11-3', lat: 37.5656743404155, lng: 126.80168224778114 },
+      { type: 'Transport', specifics: 'Train Station', name: 'Dongjak Station', lat: 37.50305966614778, lng: 126.980426826884 },
+      { type: 'Venue', specifics: 'Track Race Jump', name: 'Wa Stadium', lat: 37.31986034537371, lng: 126.81949790654315 },
+      { type: 'Venue', specifics: 'Urban Workshops Registration Final party', name: 'Wa Stadium Social area', lat: 37.31960312541935, lng: 126.81892247660237 },
+      { type: 'Venue', specifics: 'Freestyle & Basketball Workshops', name: 'Wadong Gym', lat: 37.34132734323314, lng: 126.81846630691668 },
+      { type: 'Venue', specifics: 'Hockey Downhill Gliding', name: 'ShinAnsan Univ', lat: 37.31299738857227, lng: 126.8075351311134 },
+      { type: 'Venue', specifics: '10Km Cyclocross', name: 'Ansan Lake Park', lat: 37.30126261334414, lng: 126.82619438118802 },
+      { type: 'Venue', specifics: 'Rail Race', name: 'Suinsun Rail', lat: 37.316539564814704, lng: 126.81872742732916 },
+      { type: 'Venue', specifics: '42Km', name: 'HwajeongCheon', lat: 37.32261889945037, lng: 126.82033504117317 },
+      { type: 'Venue', specifics: 'Opening Ceremonies', name: 'Hwarang Park', lat: 37.323952080836285, lng: 126.8122305956285 },
+      { type: 'Venue', specifics: 'Freestyle open practice', name: 'Ansan Olympic Gym', lat: 37.32702000974406, lng: 126.82713396726795 },
+      { type: 'Venue', specifics: 'XC & UH', name: 'Suri Mt', lat: 37.34155401019666, lng: 126.89779767820534 },
+      { type: 'Venue', specifics: 'DH', name: 'Suam Mt', lat: 37.3641389625047, lng: 126.88016073832495 },
+      { type: 'Venue', specifics: '100km', name: 'Daebudo', lat: 37.28430799525488, lng: 126.5833206089257 },
+      { type: 'Lodging', specifics: '', name: 'Dormitory (New-RaSung)', lat: 37.30574876348762, lng: 126.86216092663783 },
+      { type: 'Lodging', specifics: '', name: 'Royal Heritage Hotel', lat: 37.318038864663556, lng: 126.8392340498254 },
+      { type: 'Lodging', specifics: '', name: 'Hivice Hotel', lat: 37.31736662296521, lng: 126.83519926735283 },
+      { type: 'Lodging', specifics: '', name: 'Rasung Hotel', lat: 37.32832166459814, lng: 126.80368473913991 },
+      { type: 'Lodging', specifics: '', name: 'Rio Hotel', lat: 37.310087473015635, lng: 126.86807826153131 },
+      { type: 'Lodging', specifics: '', name: 'Hanyang University Erica Guest House', lat: 37.299855851636906, lng: 126.84228596847092 },
+      { type: 'Lodging', specifics: '', name: 'Seowon Hotel', lat: 37.30239760230241, lng: 126.85049206496149 },
+      { type: 'Lodging', specifics: '', name: 'Hotel Square', lat: 37.31505415189625, lng: 126.80239962410009 },
+      { type: 'Lodging', specifics: '', name: 'Hanyang University Erica Dormitory', lat: 37.29889906613337, lng: 126.8377918166832 },
+      { type: 'Lodging', specifics: '', name: 'Ansan Hwarang Auto Camping Ground', lat: 37.32325255177624, lng: 126.81606816496247 }
+    ];
 
-        var marker2 = L.marker([37.31960312541935, 126.81892247660237]).addTo(map);
-        marker2.bindPopup("<b>Marker 2</b><br>Details about marker 2.");
+    // Create markers and store them by type
+    var markersByName = {};
+    var venueMarkers = [];
+    var transportMarkers = [];
+    var lodgingMarkers = [];
 
-        var latlngs = [
-            [37.4623941575982, 126.44255399390985],
-            [37.31960312541935, 126.81892247660237]
-        ];
+    locations.forEach(function(location) {
+      var icon = (location.type === 'Venue') ? blueIcon :
+                 (location.type === 'Transport') ? redIcon : greenIcon;
+      var marker = L.marker([location.lat, location.lng], { icon: icon });
+      marker.bindPopup("<b>" + location.name + "</b><br>" + location.specifics);
+      markersByName[location.name] = marker;
+      if (location.type === 'Venue') {
+        venueMarkers.push(marker);
+      } else if (location.type === 'Transport') {
+        transportMarkers.push(marker);
+      } else if (location.type === 'Lodging') {
+        lodgingMarkers.push(marker);
+      }
+    });
 
-        var polyline = L.polyline(latlngs, {
-            color: 'blue',
-            dashArray: '10, 10',
-            dashOffset: '10'
-        });
+    // Function to create routes (polylines)
+    function makeRoute(coords, routeName, color = 'blue') {
+      var pl = L.polyline(coords, {
+        color: color,
+        dashArray: '10, 10',
+        dashOffset: '10'
+      });
+      pl.bindPopup("<b>" + routeName + "</b><br>");
+      return pl;
+    }
 
-        var polylinePopup = L.popup().setContent("<b>Polyline</b><br>Details about the polyline.");
+    // Define some sample routes (unchanged from your original code)
+    var route7000 = makeRoute([
+      [37.48669961905564,126.51382125942500],
+      [37.31705631699141,126.84690062084255]
+    ], "7000 bus");
 
-        var polylineVisible = false;
+    var routeAirportRailway = makeRoute([
+      [37.48669961905564,126.51382125942646],
+      [37.55481898267267,126.97201778352822]
+    ], "Airport Railway");
 
-        function showPolyline() {
-            if (!polylineVisible) {
-                polyline.addTo(map);
-                polyline.setStyle({dashOffset: '0'});
-                polyline.bindPopup(polylinePopup).openPopup();
-            }
+    var route7002 = makeRoute([
+      [37.5656743404155,126.80168224778114],
+      [37.31705631699141,126.84690062084255]
+    ], "7002 bus");
+
+    var routeLine9_gimpo = makeRoute([
+      [37.5656743404155,126.80168224778000],
+      [37.50305966614778,126.980426826884]
+    ], "Line 9");
+
+    var routeLine4_seoulGojan = makeRoute([
+      [37.55481898267267,126.97201778352822],
+      [37.317014388952295,126.82305835386012]
+    ], "Line 4");
+
+    var routeLine9_gojanDongjak = makeRoute([
+      [37.317014388952295,126.82305835386012],
+      [37.50305966614778,126.980426826884]
+    ], "Line 4");
+
+    var allPolylines = [route7000, routeAirportRailway, route7002, routeLine9_gimpo, routeLine4_seoulGojan, routeLine9_gojanDongjak];
+
+    // Make polylines open/close their popup on hover
+    allPolylines.forEach(function(pl) {
+      pl.on('mouseover', function(e) {
+        pl.openPopup(e.latlng);
+      });
+      pl.on('mouseout', function() {
+        pl.closePopup();
+      });
+    });
+
+    // Function to animate the geodesic line
+    function animateLine(polyline, pathCoords) {
+      let index = 0;
+      let steps = pathCoords.length;
+      let interval = 5; // Time between updates (ms)
+      let latLngs = []; // Store intermediate points
+
+      function drawStep() {
+        if (index >= steps) return; // Stop when full path is drawn
+        
+        latLngs.push(pathCoords[index]);
+        polyline.setLatLngs(latLngs); // Update the polyline
+        index++;
+        setTimeout(drawStep, interval); // Repeat until done
+      }
+
+      polyline.setLatLngs([]); // Clear previous animation
+      drawStep(); // Start animation
+    }
+
+    // Function to create and animate geodesic routes
+    function createAndAnimateRoute(start, end, color = 'blue') {
+      const arcGenerator = new arc.GreatCircle(start, end);
+      const geodesicLine = arcGenerator.Arc(100, { offset: 20 }); // Increased offset for larger arc radius
+      const pathCoords = geodesicLine.geometries[0].coords.map(coord => [coord[1], coord[0]]); // Convert to [lat, lng]
+
+      let animatedLine = L.polyline([], {
+        color: color,
+        weight: 3,
+        opacity: 0 // Initially invisible
+      });
+
+      animateLine(animatedLine, pathCoords);
+      return animatedLine;
+    }
+
+    // Define routes using arc.js
+    var incheonRoutes = [
+      createAndAnimateRoute({ x: 126.51382125942500, y: 37.48669961905564 }, { x: 126.84690062084255, y: 37.31705631699141 }, 'blue'),
+      createAndAnimateRoute({ x: 126.51382125942646, y: 37.48669961905564 }, { x: 126.97201778352822, y: 37.55481898267267 }, 'blue'),
+      createAndAnimateRoute({ x: 126.97201778352822, y: 37.55481898267267 }, { x: 126.82305835386012, y: 37.317014388952295 }, 'blue')
+    ];
+
+    var gimpoRoutes = [
+      createAndAnimateRoute({ x: 126.80168224778114, y: 37.5656743404155 }, { x: 126.84690062084255, y: 37.31705631699141 }, 'red'),
+      createAndAnimateRoute({ x: 126.80168224778000, y: 37.5656743404155 }, { x: 126.980426826884, y: 37.50305966614778 }, 'red'),
+      createAndAnimateRoute({ x: 126.980426826884, y: 37.50305966614778 }, { x: 126.82305835386012, y: 37.317014388952295 }, 'red') // Updated route
+    ];
+
+    // Helper functions to add/remove markers and polylines
+    function toggleMarkers(markers, show) {
+      markers.forEach(function(m) {
+        if (show) {
+          m.addTo(map);
+        } else {
+          m.remove();
         }
-
-        function hidePolyline() {
-            if (!polylineVisible) {
-                polyline.remove();
-                polyline.closePopup();
-            }
+      });
+    }
+    function togglePolylines(polylines, show) {
+      polylines.forEach(function(pl) {
+        if (show) {
+          pl.addTo(map);
+          pl.setStyle({ opacity: 1 });
+        } else {
+          pl.remove();
         }
+      });
+    }
 
-        function togglePolyline() {
-            polylineVisible = !polylineVisible;
-            if (polylineVisible) {
-                polyline.addTo(map);
-                polyline.setStyle({dashOffset: '0'});
-            } else {
-                polyline.remove();
-            }
-        }
+    // Grab the toggle elements from the DOM
+    var toggleVenuesEl = document.getElementById('toggleVenues');
+    var toggleTransportEl = document.getElementById('toggleTransport');
+    var transportRoutesContainer = document.getElementById('transportRoutesContainer');
+    var toggleIncheonRoutesEl = document.getElementById('toggleIncheonRoutes');
+    var toggleGimpoRoutesEl = document.getElementById('toggleGimpoRoutes');
+    var toggleLodgingEl = document.getElementById('toggleLodging');
 
-        marker1.on('mouseover', showPolyline);
-        marker1.on('mouseout', hidePolyline);
-        marker1.on('click', togglePolyline);
+    // When "Show All Venues" is toggled, add or remove venue markers and adjust the map view.
+    toggleVenuesEl.addEventListener('click', function() {
+      var isOn = toggleVenuesEl.classList.toggle('active');
+      toggleMarkers(venueMarkers, isOn);
+      if (isOn && venueMarkers.length > 0) {
+        var group = L.featureGroup(venueMarkers);
+        map.fitBounds(group.getBounds());
+      }
+    });
 
-        marker2.on('mouseover', showPolyline);
-        marker2.on('mouseout', hidePolyline);
-        marker2.on('click', togglePolyline);
+    // When "Show All Transport" is toggled, add or remove transport markers,
+    // adjust the map view, and show/hide the nested routes toggle.
+    toggleTransportEl.addEventListener('click', function() {
+      var isOn = toggleTransportEl.classList.toggle('active');
+      toggleMarkers(transportMarkers, isOn);
+      if (isOn && transportMarkers.length > 0) {
+        var group = L.featureGroup(transportMarkers);
+        map.fitBounds(group.getBounds());
+      }
+      transportRoutesContainer.style.display = isOn ? 'block' : 'none';
+      if (!isOn) {
+        // Also turn off any transport routes
+        toggleIncheonRoutesEl.classList.remove('active');
+        toggleGimpoRoutesEl.classList.remove('active');
+        togglePolylines(incheonRoutes, false);
+        togglePolylines(gimpoRoutes, false);
+      }
+    });
 
-        polyline.on('mouseover', function(e) {
-            polyline.openPopup(e.latlng);
+    // Event handler for Incheon routes toggle
+    toggleIncheonRoutesEl.addEventListener('click', function() {
+      var isOn = toggleIncheonRoutesEl.classList.toggle('active');
+      togglePolylines(incheonRoutes, isOn);
+      if (isOn) {
+        incheonRoutes.forEach(function(pl) {
+          animateLine(pl, pl.getLatLngs());
         });
+      }
+    });
 
-        polyline.on('mouseout', function() {
-            polyline.closePopup();
+    // Event handler for Gimpo routes toggle
+    toggleGimpoRoutesEl.addEventListener('click', function() {
+      var isOn = toggleGimpoRoutesEl.classList.toggle('active');
+      togglePolylines(gimpoRoutes, isOn);
+      if (isOn) {
+        gimpoRoutes.forEach(function(pl) {
+          animateLine(pl, pl.getLatLngs());
         });
-    </script>
+      }
+    });
+
+    // When "Show All Lodging" is toggled, add or remove lodging markers and adjust the view.
+    toggleLodgingEl.addEventListener('click', function() {
+      var isOn = toggleLodgingEl.classList.toggle('active');
+      toggleMarkers(lodgingMarkers, isOn);
+      if (isOn && lodgingMarkers.length > 0) {
+        var group = L.featureGroup(lodgingMarkers);
+        map.fitBounds(group.getBounds());
+      }
+    });
+
+    // Initially turn off all markers and polylines
+    toggleMarkers(venueMarkers, false);
+    toggleMarkers(transportMarkers, false);
+    toggleMarkers(lodgingMarkers, false);
+    togglePolylines(incheonRoutes, false);
+    togglePolylines(gimpoRoutes, false);
+  </script>
 </body>
 </html>
