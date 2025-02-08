@@ -46,7 +46,7 @@ let colorScale;
 let bars;
 
 const loadData = (isWinnerData) => {
-  const dataFile = isWinnerData ? "../static/data/Country_Winner_Count.csv" : "../static/data/Country_Particpation_Count.csv";
+  const dataFile = isWinnerData ? "static/data/Country_Winner_Count.csv" : "static/data/Country_Particpation_Count.csv";
   const colorScheme = isWinnerData ? d3.schemeGreens[5] : d3.schemeBlues[5];
 
   Promise.all([
