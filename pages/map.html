@@ -48,9 +48,11 @@
   <div id="map"></div>
   <div id="toggleContainer">
     <button id="toggleVenues" class="toggle-button">Show All Venues</button>
+    <!-- Added search input for venues -->
+    <input type="text" id="searchVenue" placeholder="search for your venue" style="display:none; margin-top:5px;" />
     <button id="toggleTransport" class="toggle-button transport">Show All Transport</button>
     <div id="transportRoutesContainer" style="display:none; margin-left:20px;">
-      <!-- Replaced single routes toggle with two buttons -->
+      <!-- The toggle buttons remain; they now simply turn on the animated routes -->
       <button id="toggleIncheonRoutes" class="toggle-button route-button">Routes from Incheon</button>
       <button id="toggleGimpoRoutes" class="toggle-button route-button">Routes from Gimpo</button>      
     </div>
@@ -95,13 +97,13 @@
     // Define locations
     var locations = [
       { type: 'Transport', specifics: 'Airport', name: 'Incheon International Airport', lat: 37.48669961905564, lng: 126.51382125942646 },
-      { type: 'Transport', specifics: 'Bus stop', name: 'Incheon International Airport/ Stop 7A', lat: 37.48669961905564, lng: 126.51382125942500 },
+      { type: 'Transport', specifics: 'Airport/ Bus stop', name: 'Incheon International Airport/ Stop 7A', lat: 37.48669961905564, lng: 126.51382125942500 },
       { type: 'Transport', specifics: 'Bus stop', name: 'Ansan Bus Terminal', lat: 37.31705631699141, lng: 126.84690062084255 },
       { type: 'Transport', specifics: 'Stadium', name: 'Wa stadium', lat: 37.31987748180103, lng: 126.81946574167756 },
       { type: 'Transport', specifics: 'Train Station', name: 'Seoul Station', lat: 37.55481898267267, lng: 126.97201778352822 },
       { type: 'Transport', specifics: 'Train Station', name: 'Gojan Station', lat: 37.317014388952295, lng: 126.82305835386012 },
       { type: 'Transport', specifics: 'Airport', name: 'Gimpo international Airport', lat: 37.5656743404155, lng: 126.80168224778000 },
-      { type: 'Transport', specifics: 'Bus stop', name: 'Gimpo international Airport/ Stop 11-3', lat: 37.5656743404155, lng: 126.80168224778114 },
+      { type: 'Transport', specifics: 'Airport/ Bus stop', name: 'Gimpo international Airport/ Stop 11-3', lat: 37.5656743404155, lng: 126.80168224778114 },
       { type: 'Transport', specifics: 'Train Station', name: 'Dongjak Station', lat: 37.50305966614778, lng: 126.980426826884 },
       { type: 'Venue', specifics: 'Track Race Jump', name: 'Wa Stadium', lat: 37.31986034537371, lng: 126.81949790654315 },
       { type: 'Venue', specifics: 'Urban Workshops Registration Final party', name: 'Wa Stadium Social area', lat: 37.31960312541935, lng: 126.81892247660237 },
@@ -127,6 +129,15 @@
       { type: 'Lodging', specifics: '', name: 'Ansan Hwarang Auto Camping Ground', lat: 37.32325255177624, lng: 126.81606816496247 }
     ];
 
+// Example bus icon (change iconUrl to your preferred bus icon)
+var busIcon = L.icon({
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/2111/2111450.png",
+  iconSize: [24, 24],      // Adjust size to fit your needs
+  iconAnchor: [12, 24],    // Position the "tip" of the icon
+  popupAnchor: [0, -24]    // Where the popup should open relative to the icon
+});
+
+
     // Create markers and store them by type
     var markersByName = {};
     var venueMarkers = [];
@@ -140,6 +151,8 @@
       marker.bindPopup("<b>" + location.name + "</b><br>" + location.specifics);
       markersByName[location.name] = marker;
       if (location.type === 'Venue') {
+        // Add specifics property for filtering
+        marker.specifics = location.specifics;
         venueMarkers.push(marker);
       } else if (location.type === 'Transport') {
         transportMarkers.push(marker);
@@ -148,7 +161,7 @@
       }
     });
 
-    // Function to create routes (polylines)
+    // Function to create static routes (polylines)
     function makeRoute(coords, routeName, color = 'blue') {
       var pl = L.polyline(coords, {
         color: color,
@@ -159,7 +172,7 @@
       return pl;
     }
 
-    // Define some sample routes (unchanged from your original code)
+    // Define some static routes (if needed)
     var route7000 = makeRoute([
       [37.48669961905564,126.51382125942500],
       [37.31705631699141,126.84690062084255]
@@ -192,13 +205,16 @@
 
     var allPolylines = [route7000, routeAirportRailway, route7002, routeLine9_gimpo, routeLine4_seoulGojan, routeLine9_gojanDongjak];
 
-    // Make polylines open/close their popup on hover
+    // Make static polylines show their popups on hover and click
     allPolylines.forEach(function(pl) {
       pl.on('mouseover', function(e) {
         pl.openPopup(e.latlng);
       });
       pl.on('mouseout', function() {
         pl.closePopup();
+      });
+      pl.on('click', function(e) {
+        pl.openPopup(e.latlng);
       });
     });
 
@@ -210,8 +226,7 @@
       let latLngs = []; // Store intermediate points
 
       function drawStep() {
-        if (index >= steps) return; // Stop when full path is drawn
-        
+        if (index >= steps) return; // Stop when full path is drawn        
         latLngs.push(pathCoords[index]);
         polyline.setLatLngs(latLngs); // Update the polyline
         index++;
@@ -222,33 +237,84 @@
       drawStep(); // Start animation
     }
 
-    // Function to create and animate geodesic routes
-    function createAndAnimateRoute(start, end, color = 'blue') {
+    // Modified function to create and animate geodesic routes
+    // Now accepts a "label" parameter to bind as the popup content.
+    function createAndAnimateRoute(start, end, color = 'blue', label = "") {
       const arcGenerator = new arc.GreatCircle(start, end);
-      const geodesicLine = arcGenerator.Arc(100, { offset: 20 }); // Increased offset for larger arc radius
-      const pathCoords = geodesicLine.geometries[0].coords.map(coord => [coord[1], coord[0]]); // Convert to [lat, lng]
-
+      const geodesicLine = arcGenerator.Arc(100, { offset: 20 });
+      const pathCoords = geodesicLine.geometries[0].coords.map(coord => [coord[1], coord[0]]);
       let animatedLine = L.polyline([], {
         color: color,
         weight: 3,
         opacity: 0 // Initially invisible
       });
-
+      animatedLine.bindPopup(label);
+      
+      // Attach popup events so the label appears on hover or click
+      animatedLine.on('mouseover', function(e) {
+        animatedLine.openPopup(e.latlng);
+      });
+      animatedLine.on('mouseout', function() {
+        animatedLine.closePopup();
+      });
+      animatedLine.on('click', function(e) {
+        animatedLine.openPopup(e.latlng);
+      });
+      
       animateLine(animatedLine, pathCoords);
       return animatedLine;
     }
 
-    // Define routes using arc.js
+    // Define animated routes using arc.js with the proper popup labels
+
+    // Incheon-based routes (blue)
+    // 1. Ansan Bus Terminal ↔ Incheon International Airport/Stop 7A => "7000 bus"
+    // 2. Incheon International Airport/Stop 7A ↔ Seoul Station => "Airport Railway"
+    // 3. Seoul Station ↔ Gojan Station => "Line 4"
     var incheonRoutes = [
-      createAndAnimateRoute({ x: 126.51382125942500, y: 37.48669961905564 }, { x: 126.84690062084255, y: 37.31705631699141 }, 'blue'),
-      createAndAnimateRoute({ x: 126.51382125942646, y: 37.48669961905564 }, { x: 126.97201778352822, y: 37.55481898267267 }, 'blue'),
-      createAndAnimateRoute({ x: 126.97201778352822, y: 37.55481898267267 }, { x: 126.82305835386012, y: 37.317014388952295 }, 'blue')
+      createAndAnimateRoute(
+        { x: 126.51382125942500, y: 37.48669961905564 },
+        { x: 126.84690062084255, y: 37.31705631699141 },
+        'blue',
+        "<b>7000 bus</b><br> - 9,000won<br> - 80 mins "
+      ),
+      createAndAnimateRoute(
+        { x: 126.51382125942646, y: 37.48669961905564 },
+        { x: 126.97201778352822, y: 37.55481898267267 },
+        'blue',
+        "<b>Airport Railway</b><br> - total fare 4,250 won<br> - total time 2 hrs"
+      ),
+      createAndAnimateRoute(
+        { x: 126.97201778352822, y: 37.55481898267267 },
+        { x: 126.82305835386012, y: 37.317014388952295 },
+        'blue',
+        "<b>Line 4</b><br> - total fare 4,250 won<br> - total time 2 hrs"
+      )
     ];
 
+    // Gimpo-based routes (red)
+    // 1. Gimpo International Airport/Stop 11-3 ↔ Ansan Bus Terminal => "7002 bus"
+    // 2. Gimpo international Airport ↔ Dongjak Station => "Line 9"
+    // 3. Dongjak Station ↔ Gojan Station => "Line 4"
     var gimpoRoutes = [
-      createAndAnimateRoute({ x: 126.80168224778114, y: 37.5656743404155 }, { x: 126.84690062084255, y: 37.31705631699141 }, 'red'),
-      createAndAnimateRoute({ x: 126.80168224778000, y: 37.5656743404155 }, { x: 126.980426826884, y: 37.50305966614778 }, 'red'),
-      createAndAnimateRoute({ x: 126.980426826884, y: 37.50305966614778 }, { x: 126.82305835386012, y: 37.317014388952295 }, 'red') // Updated route
+      createAndAnimateRoute(
+        { x: 126.80168224778114, y: 37.5656743404155 },
+        { x: 126.84690062084255, y: 37.31705631699141 },
+        'red',
+        "<b>7002 bus</b><br> - 6,000won<br> - 90 mins "
+      ),
+      createAndAnimateRoute(
+        { x: 126.80168224778000, y: 37.5656743404155 },
+        { x: 126.980426826884, y: 37.50305966614778 },
+        'red',
+        "<b>Line 9</b><br> - total fare 2,050 won<br> - total time 90 mins"
+      ),
+      createAndAnimateRoute(
+        { x: 126.980426826884, y: 37.50305966614778 },
+        { x: 126.82305835386012, y: 37.317014388952295 },
+        'red',
+        "<b>Line 4</b><br> - total fare 2,050 won<br> - total time 90 mins"
+      )
     ];
 
     // Helper functions to add/remove markers and polylines
@@ -272,21 +338,47 @@
       });
     }
 
+    // Function to filter venue markers by the search text
+    function filterVenueMarkers() {
+      var searchText = searchVenueEl.value.toLowerCase();
+      venueMarkers.forEach(function(m) {
+        m.remove();
+        if (m.specifics.toLowerCase().includes(searchText)) {
+          m.addTo(map);
+        }
+      });
+    }
+
     // Grab the toggle elements from the DOM
     var toggleVenuesEl = document.getElementById('toggleVenues');
+    var searchVenueEl = document.getElementById('searchVenue');
     var toggleTransportEl = document.getElementById('toggleTransport');
     var transportRoutesContainer = document.getElementById('transportRoutesContainer');
     var toggleIncheonRoutesEl = document.getElementById('toggleIncheonRoutes');
     var toggleGimpoRoutesEl = document.getElementById('toggleGimpoRoutes');
     var toggleLodgingEl = document.getElementById('toggleLodging');
 
-    // When "Show All Venues" is toggled, add or remove venue markers and adjust the map view.
+    // Event listener for search input filtering
+    searchVenueEl.addEventListener('input', function() {
+      filterVenueMarkers();
+    });
+
+    // When "Show All Venues" is toggled, show/hide venue markers,
+    // adjust the map view, and show/hide the venue search bar.
     toggleVenuesEl.addEventListener('click', function() {
       var isOn = toggleVenuesEl.classList.toggle('active');
-      toggleMarkers(venueMarkers, isOn);
-      if (isOn && venueMarkers.length > 0) {
-        var group = L.featureGroup(venueMarkers);
-        map.fitBounds(group.getBounds());
+      if (isOn) {
+        // Show the search bar and filter markers if needed.
+        searchVenueEl.style.display = 'block';
+        filterVenueMarkers();
+        if (venueMarkers.length > 0) {
+          var group = L.featureGroup(venueMarkers);
+          map.fitBounds(group.getBounds());
+        }
+      } else {
+        // Hide search bar and remove venues.
+        searchVenueEl.style.display = 'none';
+        toggleMarkers(venueMarkers, false);
       }
     });
 
@@ -315,6 +407,7 @@
       togglePolylines(incheonRoutes, isOn);
       if (isOn) {
         incheonRoutes.forEach(function(pl) {
+          // Re-run the animation if desired
           animateLine(pl, pl.getLatLngs());
         });
       }
@@ -347,6 +440,27 @@
     toggleMarkers(lodgingMarkers, false);
     togglePolylines(incheonRoutes, false);
     togglePolylines(gimpoRoutes, false);
+
+    // Also allow static polylines to show their popups on click as well
+    allPolylines.forEach(function(pl) {
+      pl.on('mouseover', function(e) {
+        pl.openPopup(e.latlng);
+      });
+      pl.on('mouseout', function() {
+        pl.closePopup();
+      });
+      pl.on('click', function(e) {
+        pl.openPopup(e.latlng);
+      });
+    });
+
+    // (Optional) Re-assign proper popup content to the static routes if you are using them.
+    route7000.bindPopup("7000 bus<br><br>Description: ");
+    routeAirportRailway.bindPopup("Airport Railway<br><br>Description: ");
+    routeLine4_seoulGojan.bindPopup("Line 4<br><br>Description: ");
+    route7002.bindPopup("7002 bus<br><br>Description: ");
+    routeLine9_gimpo.bindPopup("Line 9<br><br>Description: ");
+    routeLine9_gojanDongjak.bindPopup("Line 4<br><br>Description: ");
   </script>
 </body>
 </html>
