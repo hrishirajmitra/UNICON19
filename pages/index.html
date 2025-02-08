@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Country Participation Visualization</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .visualization-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+    
+    .country {
+      stroke: #fff;
+      stroke-width: 0.5px;
+      transition: opacity 0.3s;
+    }
+    
+    .tooltip {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 4px;
+      pointer-events: none;
+      font-size: 14px;
+      z-index: 1000;
+    }
+    
+    .legend {
+      font-size: 12px;
+    }
+    
+    .legend rect {
+      stroke: #000;
+      stroke-width: 1px;
+    }
+    
+    .bar {
+      transition: opacity 0.3s;
+    }
+    
+    .bar-group {
+      cursor: pointer;
+    }
+    
+    .bar-group:hover .bar {
+      transition: fill 0.5s; /* Add transition effect */
+    }
+    
+    .bar-label {
+      font-size: 12px;
+    }
+    
+    .bar-value {
+      font-size: 12px;
+      fill: #666;
+    }
+    
+    .highlighted {
+      opacity: 1 !important;
+      transition: stroke 0.5s, opacity 0.5s; /* Add transition effect */
+    }
+    
+    .dimmed {
+      opacity: 0.3;
+    }
+
+    /* Toggle Switch */
+    .switch {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #2196F3;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #4CAF50; /* Change to green */
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+  </style>
+</head>
+<body>
+  <h1>Country Participation Visualization</h1>
+  <label class="switch">
+    <input type="checkbox" id="toggleButton">
+    <span class="slider"></span>
+  </label>
+  <div class="visualization-container">
+    <svg id="barChart" width="500" height="700"></svg>
+    <svg id="map" width="1000" height="700"></svg>
+  </div>
+  <div class="tooltip" style="display: none;"></div>
+
+  <script src="../static/js/script.js"></script>
+  <script>
+    d3.selectAll('.country')
+      .on('mouseover', function(event, d) {
+        d3.select(this).classed('highlighted', true);
+        d3.select('.tooltip')
+          .style('display', 'block')
+          .html(`Country: ${d.properties.name}`);
+      })
+      .on('mousemove', function(event) {
+        d3.select('.tooltip')
+          .style('left', (event.pageX + 10) + 'px')
+          .style('top', (event.pageY - 20) + 'px');
+      })
+      .on('mouseout', function() {
+        d3.select(this).classed('highlighted', false);
+        d3.select('.tooltip').style('display', 'none');
+      });
+  </script>
+</body>
+</html>

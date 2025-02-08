@@ -1,0 +1,832 @@
+Participant ID,Country
+1,Canada
+3,South Korea
+6,South Korea
+7,South Korea
+8,New Zealand
+9,Denmark
+11,Germany
+13,Switzerland
+15,United States
+16,United States
+17,Germany
+18,Germany
+19,United States
+20,United States
+23,United States
+25,France
+26,Switzerland
+27,Germany
+29,Germany
+31,Canada
+32,Germany
+33,Russian Federation
+34,Russian Federation
+35,France
+36,Switzerland
+37,Russian Federation
+38,Russian Federation
+40,Russian Federation
+42,France
+43,United States
+45,France
+47,Russian Federation
+48,Russian Federation
+55,United Kingdom
+56,Hungary
+57,France
+58,France
+59,France
+61,Denmark
+63,Denmark
+65,France
+66,Russian Federation
+69,France
+70,Germany
+76,United Kingdom
+79,Denmark
+80,United States
+81,France
+83,France
+85,Germany
+86,Denmark
+90,Belgium
+94,Morocco
+95,Germany
+96,Switzerland
+97,Germany
+99,Japan
+100,United States
+103,Switzerland
+104,Switzerland
+105,France
+107,Puerto Rico
+108,Germany
+110,France
+111,Japan
+112,Germany
+114,Japan
+115,Germany
+118,Switzerland
+119,Germany
+120,Germany
+121,Germany
+122,Switzerland
+124,Switzerland
+126,Germany
+128,Taiwan
+129,Switzerland
+130,France
+132,United States
+133,France
+134,France
+136,United States
+139,Japan
+140,Poland
+142,Slovakia
+143,Germany
+144,Canada
+146,France
+147,Germany
+148,Germany
+149,Germany
+150,Germany
+151,Germany
+153,Germany
+156,Russian Federation
+157,Germany
+160,South Korea
+164,Spain
+165,Spain
+166,France
+167,Germany
+168,Belgium
+169,France
+170,Austria
+172,France
+173,Hong Kong
+175,Germany
+176,Germany
+177,United States
+178,United States
+179,Canada
+181,United States
+182,Germany
+183,Switzerland
+184,France
+187,Germany
+188,United States
+189,Switzerland
+190,Germany
+191,Germany
+192,Germany
+194,Basque Country
+197,South Korea
+200,South Korea
+203,Germany
+204,United States
+206,New Zealand
+207,Taiwan
+208,Germany
+209,South Korea
+213,United Kingdom
+214,South Korea
+215,South Korea
+216,South Korea
+217,South Korea
+218,Italy
+219,Italy
+220,Italy
+221,Italy
+223,Italy
+224,Italy
+225,Italy
+226,Italy
+227,South Korea
+229,Denmark
+230,Japan
+231,Japan
+234,Japan
+236,Japan
+237,Japan
+238,United States
+239,South Korea
+240,South Korea
+241,Sweden
+242,France
+243,Israel
+244,Russian Federation
+246,United Kingdom
+247,Taiwan
+249,Germany
+250,Japan
+251,Germany
+252,Australia
+253,Japan
+254,Taiwan
+255,South Korea
+258,Canada
+259,Netherlands
+261,Japan
+262,Germany
+263,China
+264,Germany
+265,Germany
+266,Australia
+267,United Kingdom
+268,Denmark
+270,Denmark
+273,Denmark
+276,Japan
+278,Japan
+279,Japan
+280,Switzerland
+281,France
+284,Germany
+285,Germany
+286,Germany
+287,Japan
+288,Japan
+289,Japan
+290,Japan
+291,Germany
+292,Japan
+293,Japan
+296,Japan
+297,Japan
+298,Japan
+299,Japan
+301,Japan
+302,Japan
+303,Japan
+304,Japan
+305,Japan
+306,Japan
+307,Japan
+308,Japan
+309,Germany
+310,Germany
+312,Taiwan
+314,Taiwan
+316,Japan
+317,Japan
+318,Japan
+319,Japan
+320,Japan
+321,Japan
+322,Japan
+323,Japan
+324,Japan
+325,Japan
+326,France
+328,Japan
+329,Japan
+330,Germany
+331,United States
+332,United States
+333,Switzerland
+334,Japan
+337,Taiwan
+338,Japan
+339,Taiwan
+340,Japan
+341,France
+342,Taiwan
+346,Japan
+348,Denmark
+349,Germany
+350,Japan
+351,Japan
+352,Japan
+355,Japan
+356,Taiwan
+357,Germany
+359,Japan
+360,Japan
+361,Japan
+362,Taiwan
+363,Taiwan
+364,Japan
+365,Japan
+366,Japan
+367,Denmark
+368,Japan
+370,Taiwan
+371,Japan
+372,Taiwan
+373,Taiwan
+375,Taiwan
+376,Japan
+377,Japan
+378,Taiwan
+379,Japan
+380,Taiwan
+383,Japan
+384,Japan
+385,Taiwan
+386,Denmark
+387,Denmark
+388,Denmark
+390,Japan
+392,Japan
+393,Japan
+394,Japan
+395,Japan
+396,Taiwan
+397,Japan
+399,Taiwan
+400,Macao
+403,Japan
+404,Japan
+406,Denmark
+407,Denmark
+408,Denmark
+409,Singapore
+410,Japan
+412,Taiwan
+413,Japan
+414,Japan
+415,Denmark
+416,Australia
+418,Japan
+419,South Korea
+420,Germany
+421,Germany
+422,Germany
+423,South Korea
+425,South Korea
+426,Sweden
+427,South Korea
+429,South Korea
+431,South Korea
+432,Germany
+433,South Korea
+434,South Korea
+436,South Korea
+437,Japan
+438,Australia
+439,Australia
+440,Taiwan
+441,Germany
+442,Germany
+443,South Korea
+445,South Korea
+446,South Korea
+448,Germany
+449,Germany
+450,Germany
+451,France
+452,France
+453,Taiwan
+454,Germany
+455,South Korea
+456,France
+457,Germany
+458,South Korea
+462,Germany
+463,Denmark
+464,Germany
+465,Canada
+467,United States
+468,Japan
+469,Japan
+470,Japan
+471,Japan
+472,Japan
+473,Japan
+474,Taiwan
+475,Taiwan
+476,Taiwan
+477,Taiwan
+478,Taiwan
+479,Taiwan
+480,Taiwan
+481,Taiwan
+482,Taiwan
+484,Australia
+485,Australia
+486,Taiwan
+487,Taiwan
+488,South Korea
+489,Hungary
+490,South Korea
+491,South Korea
+492,Japan
+493,Switzerland
+495,Japan
+496,South Korea
+497,South Korea
+499,Switzerland
+500,Germany
+502,Hong Kong
+503,Hong Kong
+504,South Korea
+505,South Korea
+507,South Korea
+508,South Korea
+509,South Korea
+510,South Korea
+511,South Korea
+512,South Korea
+513,South Korea
+514,South Korea
+515,South Korea
+516,South Korea
+517,South Korea
+518,South Korea
+519,South Korea
+520,South Korea
+521,South Korea
+522,South Korea
+523,South Korea
+524,South Korea
+525,South Korea
+526,South Korea
+527,South Korea
+528,South Korea
+529,South Korea
+530,South Korea
+531,South Korea
+533,South Korea
+534,South Korea
+535,South Korea
+536,South Korea
+537,South Korea
+538,South Korea
+539,South Korea
+540,South Korea
+542,South Korea
+543,South Korea
+544,South Korea
+545,South Korea
+546,South Korea
+547,South Korea
+548,South Korea
+549,South Korea
+550,Australia
+551,South Korea
+552,South Korea
+553,South Korea
+554,South Korea
+555,South Korea
+556,South Korea
+557,Switzerland
+558,Switzerland
+559,South Korea
+560,South Korea
+561,South Korea
+562,South Korea
+563,South Korea
+564,Denmark
+565,South Korea
+566,South Korea
+567,Denmark
+568,South Korea
+569,South Korea
+570,South Korea
+571,South Korea
+572,South Korea
+573,South Korea
+574,South Korea
+575,South Korea
+576,South Korea
+578,South Korea
+579,South Korea
+580,South Korea
+581,South Korea
+582,South Korea
+583,South Korea
+584,South Korea
+585,South Korea
+586,South Korea
+587,South Korea
+588,South Korea
+589,South Korea
+590,South Korea
+591,South Korea
+592,South Korea
+593,South Korea
+595,Switzerland
+596,South Korea
+597,South Korea
+598,South Korea
+599,South Korea
+600,France
+601,Denmark
+602,Germany
+603,Taiwan
+604,Denmark
+605,South Korea
+606,Taiwan
+607,Taiwan
+608,Taiwan
+609,Taiwan
+610,Taiwan
+611,Taiwan
+612,Taiwan
+613,Taiwan
+614,Taiwan
+615,Taiwan
+616,Taiwan
+617,Taiwan
+618,Taiwan
+619,Taiwan
+620,Taiwan
+621,Taiwan
+622,Taiwan
+623,Taiwan
+624,Taiwan
+625,Taiwan
+626,Taiwan
+627,Taiwan
+628,Taiwan
+629,Taiwan
+630,South Korea
+631,Taiwan
+632,Taiwan
+633,Taiwan
+634,Taiwan
+635,Taiwan
+636,Australia
+637,Japan
+638,Switzerland
+639,South Korea
+640,South Korea
+641,Russian Federation
+642,Taiwan
+643,South Korea
+644,Slovakia
+645,Japan
+647,Denmark
+648,Japan
+649,South Korea
+650,South Korea
+651,Australia
+652,Hong Kong
+653,Hong Kong
+654,South Korea
+655,Japan
+656,South Korea
+657,South Korea
+658,South Korea
+659,Japan
+660,Denmark
+661,Japan
+662,Austria
+665,South Korea
+666,South Korea
+667,Germany
+668,South Korea
+669,South Korea
+670,Germany
+671,South Korea
+672,South Korea
+673,South Korea
+674,South Korea
+675,South Korea
+676,South Korea
+677,South Korea
+678,South Korea
+679,Japan
+680,South Korea
+681,South Korea
+683,Taiwan
+684,Taiwan
+685,Taiwan
+686,Taiwan
+687,Taiwan
+688,Taiwan
+689,Taiwan
+690,South Korea
+691,South Korea
+692,South Korea
+693,South Korea
+694,South Korea
+695,Singapore
+696,South Korea
+697,France
+698,France
+699,Japan
+701,South Korea
+702,South Korea
+703,Denmark
+704,France
+705,Denmark
+706,Germany
+707,Germany
+708,Australia
+709,United States
+710,France
+711,France
+713,Denmark
+714,Germany
+715,Switzerland
+716,Denmark
+717,Denmark
+718,United States
+719,Belgium
+720,South Korea
+721,Hong Kong
+723,South Korea
+724,South Korea
+725,Taiwan
+726,Australia
+727,Australia
+728,Hong Kong
+729,Hong Kong
+730,Austria
+731,Taiwan
+732,Taiwan
+733,Taiwan
+734,Taiwan
+735,Taiwan
+736,Taiwan
+737,Germany
+739,South Korea
+740,Germany
+741,Netherlands
+742,South Korea
+743,South Korea
+744,South Korea
+745,South Korea
+746,South Korea
+747,South Korea
+748,South Korea
+749,South Korea
+750,South Korea
+751,Germany
+752,South Korea
+753,Germany
+754,Germany
+755,Denmark
+759,Denmark
+760,Denmark
+761,United Kingdom
+763,South Korea
+764,Germany
+767,South Korea
+771,Canada
+772,France
+773,Switzerland
+774,France
+775,France
+776,United States
+777,Taiwan
+778,Taiwan
+779,South Korea
+780,France
+781,Germany
+783,Germany
+784,France
+786,United Kingdom
+787,France
+792,Italy
+793,Italy
+794,Austria
+795,Australia
+796,Australia
+797,Switzerland
+798,Switzerland
+799,France
+800,Germany
+802,France
+804,Taiwan
+805,Taiwan
+806,Germany
+808,South Korea
+809,South Korea
+810,Australia
+811,Denmark
+814,Sweden
+815,Germany
+816,Germany
+817,Denmark
+818,Germany
+819,France
+820,New Zealand
+821,Australia
+822,Australia
+823,Belgium
+824,Switzerland
+826,South Korea
+827,South Korea
+828,Germany
+830,France
+831,Germany
+832,Germany
+835,United States
+836,New Zealand
+837,Taiwan
+838,Taiwan
+839,Taiwan
+840,Taiwan
+841,Germany
+842,United Kingdom
+843,Australia
+844,Australia
+845,Japan
+846,Austria
+847,Austria
+850,Canada
+851,France
+852,Belgium
+853,Australia
+854,Denmark
+855,Denmark
+856,Japan
+857,Japan
+858,France
+859,Germany
+860,Belgium
+861,Russian Federation
+863,France
+865,Denmark
+866,Australia
+867,Hong Kong
+868,Hong Kong
+869,Hong Kong
+870,Hong Kong
+871,Hong Kong
+872,Hong Kong
+873,Hong Kong
+874,Hong Kong
+875,South Korea
+877,South Korea
+878,Taiwan
+879,South Korea
+880,South Korea
+881,South Korea
+882,Denmark
+883,Italy
+884,United States
+885,Japan
+886,South Korea
+889,South Korea
+890,South Korea
+891,South Korea
+893,South Korea
+894,Germany
+895,South Korea
+896,South Korea
+897,Sweden
+898,Sweden
+900,Germany
+902,United States
+903,France
+904,United States
+905,Hong Kong
+906,Hong Kong
+909,Australia
+910,Japan
+911,Australia
+913,South Korea
+914,Brazil
+946,Israel
+947,Japan
+950,Japan
+951,Canada
+952,Japan
+953,Taiwan
+954,Taiwan
+956,Japan
+957,Hong Kong
+958,South Korea
+959,United States
+960,Japan
+961,United States
+962,Germany
+966,Japan
+967,Japan
+968,Japan
+969,Japan
+970,Japan
+971,Japan
+972,Japan
+973,Japan
+974,Japan
+975,Japan
+976,Japan
+977,Japan
+978,Japan
+979,Japan
+980,Japan
+981,Japan
+982,Japan
+983,Japan
+984,Japan
+985,Japan
+986,Japan
+987,Japan
+988,Japan
+990,Japan
+991,Japan
+993,Sweden
+994,Sweden
+996,Sweden
+997,South Korea
+999,South Korea
+1002,Germany
+1003,Hong Kong
+1004,Hong Kong
+1005,Hong Kong
+1006,Hong Kong
+1007,Hong Kong
+1008,Hong Kong
+1012,South Korea
+1013,Japan
+1014,Japan
+1016,South Korea
+1017,South Korea
+1018,Japan
+1019,Switzerland
+1020,Switzerland
+1021,Australia
+1022,Australia
+1023,Australia
+1024,Japan
+1026,South Korea
+1027,South Korea
+1028,South Korea
+1029,South Korea
+1030,South Korea
+1031,South Korea
+1032,South Korea
+1033,South Korea
+1034,Hong Kong
+1037,Switzerland
+1038,South Korea
+1039,Hong Kong
+1040,Hong Kong
+1041,Hong Kong
+1042,South Korea
+1043,South Korea
+1044,Australia
+1045,Japan
+1046,Japan
+1047,Hong Kong
+1048,Hong Kong
+1049,Hong Kong
+1050,Hong Kong
+1052,Australia
+1053,New Zealand
+1054,Hong Kong
+1055,Hong Kong
+1056,South Korea
+1057,Hong Kong
+1058,South Korea
+1059,Hong Kong
+1060,Hong Kong
+1061,Hong Kong
+1062,Hong Kong
+1063,Hong Kong
+1064,Hong Kong
+1065,Hong Kong
+1066,Hong Kong
+1067,Hong Kong
+1068,Hong Kong
+1069,Australia
+1071,Germany
+1073,Australia
+1074,Australia
+1075,United States
+1076,France

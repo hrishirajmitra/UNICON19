@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donut Bar Chart</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f7fafc;
+    }
+    .chart-container {
+      width: 600px;
+      height: 600px;
+      position: relative;
+    }
+    .back-button {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      padding: 8px 16px;
+      background-color: #4299e1;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .back-button:hover {
+      background-color: #3182ce;
+    }
+    .bar-chart text {
+      font-size: 12px;
+    }
+    .center-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: gray;
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .center-button:hover {
+    background-color: black;
+    }
+    .enlarged {
+      transform: scale(1.1);
+      transition: transform 0.2s;
+    }
+    .legend {
+      font-size: 14px;
+    }
+    .legend rect {
+      width: 18px;
+      height: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chart-container">
+    <svg id="donut-chart" width="600" height="600"></svg>
+    <button id="center-button" class="center-button" onclick="showAllEvents()">All Events</button>
+    <div id="bar-chart" class="bar-chart" style="display: none;">
+      <button class="back-button" onclick="goBack()">Back</button>
+      <svg width="800" height="600"></svg> <!-- Increased width -->
+    </div>
+    <div id="legend" class="legend" style="display: none;"></div>
+  </div>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="../static/js/script.js"></script>
+  <script>
+    const data = {
+  "Road Racing": [
+    { name: "100k Standard Solo", seconds: 23970.0 },
+    { name: "100k Standard Team", seconds: 17651.0 },
+    { name: "100k Unlimited Solo", seconds: 23632.0 },
+    { name: "100k Unlimited Team", seconds: 21841.0 },
+    { name: "100k Unlimited Ungeared", seconds: 20738.0 },
+    { name: "10k Standard", seconds: 6436.491 },
+    { name: "10k Unlimited", seconds: 4456.237 },
+    { name: "10k Unlimited Ungeared", seconds: 1681.299 },
+    { name: "Marathon Standard", seconds: 12161.0 },
+    { name: "Marathon Unlimited", seconds: 11759.0 },
+    { name: "Marathon Unlimited Ungeared", seconds: 7775.0 }
+  ],
+  "Track and Field": [
+    { name: "100m", seconds: 43.053 },
+    { name: "100m Expert", seconds: 14.771 },
+    { name: "10m Wheel Walk", seconds: 6.314 },
+    { name: "30m Wheel Walk", seconds: 29.554 },
+    { name: "30m Wheel Walk Expert", seconds: 8.249 },
+    { name: "400m", seconds: 190.855 },
+    { name: "400m Expert", seconds: 61.635 },
+    { name: "4x100 Relay", seconds: 117.194 },
+    { name: "4x100 Relay Expert", seconds: 66.894 },
+    { name: "50m One-Foot", seconds: 20.253 },
+    { name: "50m One-Foot Expert", seconds: 8.468 },
+    { name: "800m", seconds: 414.386 },
+    { name: "800m Expert", seconds: 130.965 },
+    { name: "IUF Slalom", seconds: 46.74 },
+    { name: "IUF Slalom Expert", seconds: 19.95 },
+    { name: "Slow Backward", seconds: 115.56 },
+    { name: "Slow Forward", seconds: 173.66 },
+    { name: "Slow Forward Expert", seconds: 173.66 },
+    { name: "Stillstand", seconds: 2112.0 }
+  ],
+  "Muni": [
+    { name: "Cyclocross Standard", seconds: 2368.0 },
+    { name: "Cyclocross Unlimited", seconds: 2985.0 },
+    { name: "Downhill Gliding", seconds: 49.91 },
+    { name: "Muni Cross Country Beginner", seconds: 4727.0 },
+    { name: "Muni Cross Country Elite Standard", seconds: 6684.0 },
+    { name: "Muni Cross Country Elite Unlimited", seconds: 7240.0 },
+    { name: "Muni Downhill Advanced", seconds: 305.0 },
+    { name: "Muni Downhill Beginner", seconds: 707.0 },
+    { name: "Muni Downhill Elite", seconds: 468.0 },
+    { name: "Muni Uphill", seconds: 1767.2 }
+  ],
+  "Urban": [
+    { name: "Speed Trials Beginner", seconds: 28.4 }
+  ]
+};
+
+const colors = ['#4299e1', '#48bb78', '#ed8936', '#667eea'];
+const width = 600;
+const height = 600;
+const radius = Math.min(width, height) / 3;
+
+const donutArc = d3.arc()
+  .innerRadius(radius * 0.6)
+  .outerRadius(radius);
+
+const pieGenerator = d3.pie()
+  .value(() => 1)
+  .sort(null);
+
+const pieData = pieGenerator(Object.keys(data));
+
+const donutSvg = d3.select("#donut-chart")
+  .append("g")
+  .attr("transform", `translate(${width / 2},${height / 2})`);
+
+donutSvg.selectAll("path")
+  .data(pieData)
+  .enter()
+  .append("path")
+  .attr("d", donutArc)
+  .attr("fill", (d, i) => colors[i])
+  .style("cursor", "pointer")
+  .on("click", (event, d) => {
+    document.getElementById("center-button").style.display = "none";
+    showBarChart(d.data);
+  })
+  .on("mouseover", function() {
+    d3.select(this).classed("enlarged", true);
+  })
+  .on("mouseout", function() {
+    d3.select(this).classed("enlarged", false);
+  });
+
+  donutSvg.selectAll("path.textPath")
+  .data(pieData)
+  .enter()
+  .append("path")
+  .attr("class", "textPath")
+  .attr("id", (d, i) => `textPath-${i}`)
+  .attr("d", d => {
+    const textRadius = radius * 0.77; // Position text in middle of donut
+    const startAngle = d.startAngle;
+    const endAngle = d.endAngle;
+    
+    const start = {
+      x: textRadius * Math.sin(startAngle),
+      y: -textRadius * Math.cos(startAngle)
+    };
+    
+    const end = {
+      x: textRadius * Math.sin(endAngle),
+      y: -textRadius * Math.cos(endAngle)
+    };
+
+    const largeArcFlag = endAngle - startAngle <= Math.PI ? "0" : "1";
+    
+    return `M ${start.x},${start.y} A ${textRadius},${textRadius} 0 ${largeArcFlag} 1 ${end.x},${end.y}`;
+  })
+  .style("fill", "none")
+  .style("stroke", "none");
+
+// Add text along the paths
+donutSvg.selectAll(".curved-text")
+  .data(pieData)
+  .enter()
+  .append("text")
+  .append("textPath")
+  .attr("href", (d, i) => `#textPath-${i}`)
+  .attr("startOffset", "50%")
+  .style("text-anchor", "middle")
+  .style("fill", "white")
+  .style("font-size", "14px")
+  .text(d => d.data);
+
+donutSvg.selectAll("path")
+  .on("mouseover", function(event, d) {
+    const segment = d3.select(this);
+    segment.classed("enlarged", true);
+  })
+  .on("mouseout", function(event, d) {
+    const segment = d3.select(this);
+    segment.classed("enlarged", false);
+  });
+
+let animationProgress = 0;
+let selectedCategory = null;
+
+function showBarChart(category) {
+  selectedCategory = category;
+  document.getElementById("donut-chart").style.display = "none";
+  document.getElementById("bar-chart").style.display = "block";
+  document.getElementById("legend").style.display = "block";
+
+  const barSvg = d3.select("#bar-chart svg");
+  barSvg.selectAll("*").remove();
+
+  const categoryData = data[category].sort((a, b) => b.seconds - a.seconds); // Sort in decreasing order
+  const maxTime = d3.max(categoryData, d => d.seconds);
+
+  const xScale = d3.scaleLinear()
+    .domain([0, maxTime])
+    .range([0, 800 - 300]); // Increased width
+
+  const yScale = d3.scaleBand()
+    .domain(categoryData.map(d => d.name))
+    .range([0, height - 50])
+    .padding(0.1);
+
+  const barGroup = barSvg.append("g")
+    .attr("transform", `translate(200, 20)`);
+
+  animationProgress = 0;
+  const interval = setInterval(() => {
+    animationProgress += 0.05;
+    if (animationProgress >= 1) {
+      clearInterval(interval);
+      animationProgress = 1;
+    }
+    updateBars();
+  }, 20);
+
+  function updateBars() {
+    barGroup.selectAll("rect")
+      .data(categoryData)
+      .join("rect")
+      .attr("y", d => yScale(d.name))
+      .attr("height", yScale.bandwidth())
+      .attr("fill", colors[Object.keys(data).indexOf(category)])
+      .attr("width", d => xScale(d.seconds) * animationProgress);
+
+    barGroup.selectAll("text.time")
+      .data(categoryData)
+      .join("text")
+      .attr("class", "time")
+      .attr("x", d => xScale(d.seconds) * animationProgress + 5)
+      .attr("y", d => yScale(d.name) + yScale.bandwidth() / 2)
+      .attr("dy", ".35em")
+      .text(d => formatTime(d.seconds));
+
+    barGroup.selectAll("text.label")
+      .data(categoryData)
+      .join("text")
+      .attr("class", "label")
+      .attr("x", -5)
+      .attr("y", d => yScale(d.name) + yScale.bandwidth() / 2)
+      .attr("dy", ".35em")
+      .attr("text-anchor", "end")
+      .text(d => d.name);
+  }
+
+  // Create legend
+  const legend = d3.select("#legend");
+  legend.selectAll("*").remove();
+
+  legend.append("div")
+    .style("display", "flex")
+    .style("align-items", "center")
+    .append("div")
+    .style("background-color", colors[Object.keys(data).indexOf(category)])
+    .style("width", "18px")
+    .style("height", "18px")
+    .style("margin-right", "8px");
+
+  legend.append("span")
+    .text(category);
+}
+
+function showAllEvents() {
+  document.getElementById("center-button").style.display = "none";
+  document.getElementById("donut-chart").style.display = "none";
+  document.getElementById("bar-chart").style.display = "block";
+  document.getElementById("legend").style.display = "block";
+
+  const barSvg = d3.select("#bar-chart svg");
+  barSvg.selectAll("*").remove();
+
+  // Flatten all events and sort by time in decreasing order
+  const allEvents = Object.keys(data).flatMap(category =>
+    data[category].map(event => ({ ...event, category }))
+  ).sort((a, b) => b.seconds - a.seconds);
+
+  const maxTime = d3.max(allEvents, d => d.seconds);
+
+  const xScale = d3.scaleLinear()
+    .domain([0, maxTime])
+    .range([0, 800 - 300]); // Increased width
+
+  const yScale = d3.scaleBand()
+    .domain(allEvents.map(d => d.name))
+    .range([0, height - 50])
+    .padding(0.1);
+
+  const barGroup = barSvg.append("g")
+    .attr("transform", `translate(200, 20)`);
+
+  animationProgress = 0;
+  const interval = setInterval(() => {
+    animationProgress += 0.05;
+    if (animationProgress >= 1) {
+      clearInterval(interval);
+      animationProgress = 1;
+    }
+    updateBars();
+  }, 20);
+
+  function updateBars() {
+    barGroup.selectAll("rect")
+      .data(allEvents)
+      .join("rect")
+      .attr("y", d => yScale(d.name))
+      .attr("height", yScale.bandwidth())
+      .attr("fill", d => colors[Object.keys(data).indexOf(d.category)])
+      .attr("width", d => xScale(d.seconds) * animationProgress);
+
+    barGroup.selectAll("text.time")
+      .data(allEvents)
+      .join("text")
+      .attr("class", "time")
+      .attr("x", d => xScale(d.seconds) * animationProgress + 5)
+      .attr("y", d => yScale(d.name) + yScale.bandwidth() / 2)
+      .attr("dy", ".35em")
+      .text(d => formatTime(d.seconds));
+
+    barGroup.selectAll("text.label")
+      .data(allEvents)
+      .join("text")
+      .attr("class", "label")
+      .attr("x", -5)
+      .attr("y", d => yScale(d.name) + yScale.bandwidth() / 2)
+      .attr("dy", ".35em")
+      .attr("text-anchor", "end")
+      .text(d => d.name);
+  }
+
+  // Create legend
+  const legend = d3.select("#legend");
+  legend.selectAll("*").remove();
+
+  const categories = Object.keys(data);
+  categories.forEach((category, i) => {
+    const legendItem = legend.append("div")
+      .style("display", "flex")
+      .style("align-items", "center")
+      .style("margin-bottom", "4px");
+
+    legendItem.append("div")
+      .style("background-color", colors[i])
+      .style("width", "18px")
+      .style("height", "18px")
+      .style("margin-right", "8px");
+
+    legendItem.append("span")
+      .text(category);
+  });
+}
+
+function goBack() {
+  selectedCategory = null;
+  document.getElementById("center-button").style.display = "block";
+  document.getElementById("donut-chart").style.display = "block";
+  document.getElementById("bar-chart").style.display = "none";
+  document.getElementById("legend").style.display = "none";
+}
+
+function formatTime(seconds) {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+  </script>
+</body>
+</html>

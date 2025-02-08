@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>South Korea Submunicipalities Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 600px;
+        }
+        .leaflet-interactive {
+            transition: stroke-dashoffset 1s linear;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        var map = L.map('map').setView([37.31960312541935, 126.81892247660237], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+        }).addTo(map);
+
+        var marker1 = L.marker([37.4623941575982, 126.44255399390985]).addTo(map);
+        marker1.bindPopup("<b>Marker 1</b><br>Details about marker 1.");
+
+        var marker2 = L.marker([37.31960312541935, 126.81892247660237]).addTo(map);
+        marker2.bindPopup("<b>Marker 2</b><br>Details about marker 2.");
+
+        var latlngs = [
+            [37.4623941575982, 126.44255399390985],
+            [37.31960312541935, 126.81892247660237]
+        ];
+
+        var polyline = L.polyline(latlngs, {
+            color: 'blue',
+            dashArray: '10, 10',
+            dashOffset: '10'
+        });
+
+        var polylinePopup = L.popup().setContent("<b>Polyline</b><br>Details about the polyline.");
+
+        var polylineVisible = false;
+
+        function showPolyline() {
+            if (!polylineVisible) {
+                polyline.addTo(map);
+                polyline.setStyle({dashOffset: '0'});
+                polyline.bindPopup(polylinePopup).openPopup();
+            }
+        }
+
+        function hidePolyline() {
+            if (!polylineVisible) {
+                polyline.remove();
+                polyline.closePopup();
+            }
+        }
+
+        function togglePolyline() {
+            polylineVisible = !polylineVisible;
+            if (polylineVisible) {
+                polyline.addTo(map);
+                polyline.setStyle({dashOffset: '0'});
+            } else {
+                polyline.remove();
+            }
+        }
+
+        marker1.on('mouseover', showPolyline);
+        marker1.on('mouseout', hidePolyline);
+        marker1.on('click', togglePolyline);
+
+        marker2.on('mouseover', showPolyline);
+        marker2.on('mouseout', hidePolyline);
+        marker2.on('click', togglePolyline);
+
+        polyline.on('mouseover', function(e) {
+            polyline.openPopup(e.latlng);
+        });
+
+        polyline.on('mouseout', function() {
+            polyline.closePopup();
+        });
+    </script>
+</body>
+</html>
