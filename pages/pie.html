@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Donut Bar Chart</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Hover Donut with All Events Button</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
       display: flex;
+      gap: 20px; /* space between donut and bar containers */
       justify-content: center;
       align-items: center;
       height: 100vh;
+      font-family: Arial, sans-serif;
     }
-    
-    /* Donut container with background, now 700px tall */
+
+    /* Donut container with background image */
     .donut-container {
       width: 600px;
       height: 700px;
@@ -24,35 +25,10 @@
       background-size: contain;
       background-position: center calc(50% - 130px);
       background-repeat: no-repeat;
+      /* Removed border */
     }
 
-    /* Bar chart container with no background */
-    .bar-container {
-      width: 800px;
-      height: 600px;
-      position: relative;
-      display: none; /* hidden by default */
-    }
-
-    .back-button {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      padding: 8px 16px;
-      background-color: #4299e1;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .back-button:hover {
-      background-color: #3182ce;
-    }
-
-    .bar-chart text {
-      font-size: 12px;
-    }
-
+    /* Center button for All Events */
     .center-button {
       position: absolute;
       top: 50%;
@@ -74,45 +50,58 @@
       background-color: black;
     }
 
-    .enlarged {
-      transform: scale(1.1);
-      transition: transform 0.2s;
+    /* Bar container side by side */
+    .bar-container {
+      width: 800px;
+      height: 700px;
+      position: relative;
+      /* Removed border */
+    }
+
+    .bar-chart text {
+      font-size: 10px; /* reduced from 12px to 10px */
     }
 
     .legend {
-      font-size: 14px;
+      font-size: 12px; /* reduced from 14px to 12px */
+      display: flex; /* All legend items in one horizontal row */
+      align-items: center;
+      gap: 16px; /* Space between each legend item */
     }
     .legend rect {
-      width: 18px;
-      height: 18px;
+      width: 200px;
+      height: 9px;
+    }
+
+    /* Donut slice hover enlargement */
+    .enlarged {
+      transform: scale(1.1);
+      transition: transform 0.2s;
     }
   </style>
 </head>
 <body>
 
-  <!-- Donut Chart Container (now 700px high) -->
-  <div id="donut-container" class="donut-container">
-    <!-- Donut Chart SVG (now 600×700) -->
+  <!-- Donut container -->
+  <div class="donut-container">
     <svg id="donut-chart" width="600" height="700"></svg>
-    <!-- Center Button for "All Events" -->
-    <button id="center-button" class="center-button" onclick="showAllEvents()">All Events</button>
+    <!-- Center button for ALL EVENTS -->
+    <button id="center-button" class="center-button">All Events</button>
   </div>
 
-  <!-- Bar Chart Container -->
-  <div id="bar-container" class="bar-container">
-    <button class="back-button" onclick="goBack()">Back</button>
-    <!-- Bar Chart SVG -->
-    <svg id="bar-chart-svg" width="800" height="600"></svg>
-    <!-- Legend -->
-    <div id="legend" class="legend" style="display: none;"></div>
+  <!-- Bar container (side by side) -->
+  <div class="bar-container">
+    <svg id="bar-chart-svg" width="800" height="700"></svg>
+    <div id="legend" class="legend"></div>
   </div>
 
+  <!-- D3 v7 -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
-    /******************************************
-     * 1) DATA & INITIAL CONFIG
-     *****************************************/
-    const data = {
+    /*******************************************
+     * 1) DATA & CATEGORIES
+     ******************************************/
+    const dataObj = {
       "Road Racing": [
         { name: "100k Standard Solo", seconds: 23970.0 },
         { name: "100k Standard Team", seconds: 17651.0 },
@@ -162,59 +151,63 @@
       ]
     };
 
-    const colors = ['#4299e1', '#48bb78', '#ed8936', '#667eea'];
+    // Our 3 slices
+    const donutCategories = ["Road Racing", "Track and Field", "Muni"];
+    // Colors for 3 slices (in order)
+    const colors = ["#4299e1", "#48bb78", "#ed8936"];
 
-    /* Updated width/height for the Donut Chart */
-    const width = 608;
-    const height = 705;
-    const radius = Math.min(width, height) / 3;
-
-    /******************************************
+    /*******************************************
      * 2) DONUT CHART SETUP
-     *****************************************/
+     ******************************************/
+    const donutWidth = 600;
+    const donutHeight = 700;
+    const radius = Math.min(donutWidth, donutHeight) / 3;
+
+    // We'll create 3 slices, each 120°, from 30° to 390°
     const donutArc = d3.arc()
       .innerRadius(radius * 0.6)
       .outerRadius(radius);
 
+    // We define startAngle=30°, endAngle=390° => total 360°,
+    // with 3 slices => each slice is 120°.
     const pieGenerator = d3.pie()
+      .startAngle((30 * Math.PI) / 180)    // 30°
+      .endAngle((390 * Math.PI) / 180)    // 390° => 30° + 360
       .value(() => 1)
       .sort(null);
 
-    const pieData = pieGenerator(Object.keys(data));
+    // We'll pass the array of categories for the 3 slices
+    const pieData = pieGenerator(donutCategories);
 
-    // Create Donut Chart SVG group
+    // Create main donut group
     const donutSvg = d3.select("#donut-chart")
       .append("g")
-      .attr("transform", `translate(${width / 2},${height / 2})`);
+      .attr("transform", `translate(${donutWidth / 2}, ${donutHeight / 2})`);
 
-    // Draw Donut Paths
+    // Build the 3 slices
     donutSvg.selectAll("path")
       .data(pieData)
-      .enter()
-      .append("path")
+      .join("path")
       .attr("d", donutArc)
       .attr("fill", (d, i) => colors[i])
       .style("cursor", "pointer")
-      .on("click", (event, d) => {
-        document.getElementById("center-button").style.display = "none";
-        showBarChart(d.data);
+      // On hover, show bar chart
+      .on("mouseover", (event, d) => {
+        d3.select(event.currentTarget).classed("enlarged", true);
+        showBarChart(d.data); // Show that category’s bar chart
       })
-      .on("mouseover", function() {
-        d3.select(this).classed("enlarged", true);
-      })
-      .on("mouseout", function() {
-        d3.select(this).classed("enlarged", false);
+      .on("mouseout", (event) => {
+        d3.select(event.currentTarget).classed("enlarged", false);
       });
 
-    // Add Curved Text Paths
+    // Add curved text paths
     donutSvg.selectAll("path.textPath")
       .data(pieData)
-      .enter()
-      .append("path")
+      .join("path")
       .attr("class", "textPath")
       .attr("id", (d, i) => `textPath-${i}`)
       .attr("d", d => {
-        const textRadius = radius * 0.77; 
+        const textRadius = radius * 0.77;
         const startAngle = d.startAngle;
         const endAngle = d.endAngle;
 
@@ -226,17 +219,16 @@
           x: textRadius * Math.sin(endAngle),
           y: -textRadius * Math.cos(endAngle)
         };
-        const largeArcFlag = endAngle - startAngle <= Math.PI ? "0" : "1";
+        const largeArcFlag = (endAngle - startAngle) <= Math.PI ? "0" : "1";
         return `M ${start.x},${start.y} A ${textRadius},${textRadius} 0 ${largeArcFlag} 1 ${end.x},${end.y}`;
       })
       .style("fill", "none")
       .style("stroke", "none");
 
-    // Attach Text to Those Paths
+    // Attach labels for the slices
     donutSvg.selectAll(".curved-text")
       .data(pieData)
-      .enter()
-      .append("text")
+      .join("text")
       .append("textPath")
       .attr("href", (d, i) => `#textPath-${i}`)
       .attr("startOffset", "50%")
@@ -245,126 +237,59 @@
       .style("font-size", "14px")
       .text(d => d.data);
 
-    /******************************************
-     * 3) BAR CHART SETUP & FUNCTIONS
-     *****************************************/
+    /*******************************************
+     * 3) CENTER BUTTON (ALL EVENTS ON HOVER)
+     ******************************************/
+    // Grab the center button
+    const centerButton = document.getElementById("center-button");
+    // On hover, show bar chart for all events
+    centerButton.addEventListener("mouseenter", () => {
+      showAllEvents(); 
+    });
+
+    /*******************************************
+     * 4) BAR CHART & LEGEND
+     ******************************************/
+    // We'll show the bar chart on the right container
     let animationProgress = 0;
-    let selectedCategory = null;
 
+    // Single category bar chart
     function showBarChart(category) {
-      selectedCategory = category;
-
-      // Hide Donut Container, Show Bar Container & Legend
-      document.getElementById("donut-container").style.display = "none";
-      document.getElementById("bar-container").style.display = "block";
-      document.getElementById("legend").style.display = "block";
-
-      // Select Bar Chart SVG
-      const barSvg = d3.select("#bar-chart-svg");
-      barSvg.selectAll("*").remove();
-
-      // Retrieve & Sort Data
-      const categoryData = data[category].sort((a, b) => b.seconds - a.seconds);
-      const maxTime = d3.max(categoryData, d => d.seconds);
-
-      const xScale = d3.scaleLinear()
-        .domain([0, maxTime])
-        .range([0, 800 - 300]);
-
-      /* Using 600 in "height" logic for the bar chart portion,
-         as that was originally set for the bar container. */
-      const yScale = d3.scaleBand()
-        .domain(categoryData.map(d => d.name))
-        .range([0, 600 - 50])
-        .padding(0.1);
-
-      const barGroup = barSvg.append("g")
-        .attr("transform", `translate(200, 20)`);
-
-      animationProgress = 0;
-      const interval = setInterval(() => {
-        animationProgress += 0.05;
-        if (animationProgress >= 1) {
-          clearInterval(interval);
-          animationProgress = 1;
-        }
-        updateBars();
-      }, 20);
-
-      // Animate Bars
-      function updateBars() {
-        barGroup.selectAll("rect")
-          .data(categoryData)
-          .join("rect")
-          .attr("y", d => yScale(d.name))
-          .attr("height", yScale.bandwidth())
-          .attr("fill", colors[Object.keys(data).indexOf(category)])
-          .attr("width", d => xScale(d.seconds) * animationProgress);
-
-        barGroup.selectAll("text.time")
-          .data(categoryData)
-          .join("text")
-          .attr("class", "time")
-          .attr("x", d => xScale(d.seconds) * animationProgress + 5)
-          .attr("y", d => yScale(d.name) + yScale.bandwidth() / 2)
-          .attr("dy", ".35em")
-          .text(d => formatTime(d.seconds));
-
-        barGroup.selectAll("text.label")
-          .data(categoryData)
-          .join("text")
-          .attr("class", "label")
-          .attr("x", -5)
-          .attr("y", d => yScale(d.name) + yScale.bandwidth() / 2)
-          .attr("dy", ".35em")
-          .attr("text-anchor", "end")
-          .text(d => d.name);
-      }
-
-      // Legend
-      const legend = d3.select("#legend");
-      legend.selectAll("*").remove();
-      legend.append("div")
-        .style("display", "flex")
-        .style("align-items", "center")
-        .append("div")
-        .style("background-color", colors[Object.keys(data).indexOf(category)])
-        .style("width", "18px")
-        .style("height", "18px")
-        .style("margin-right", "8px");
-
-      legend.append("span")
-        .text(category);
+      const catData = dataObj[category].sort((a, b) => b.seconds - a.seconds);
+      updateBarChart(catData, category);
     }
 
+    // All events bar chart
     function showAllEvents() {
-      // Hide Donut Container, Show Bar Container & Legend
-      document.getElementById("center-button").style.display = "none";
-      document.getElementById("donut-container").style.display = "none";
-      document.getElementById("bar-container").style.display = "block";
-      document.getElementById("legend").style.display = "block";
-
-      const barSvg = d3.select("#bar-chart-svg");
-      barSvg.selectAll("*").remove();
-
-      // Flatten all events, sort by decreasing time
-      const allEvents = Object.keys(data).flatMap(category =>
-        data[category].map(event => ({ ...event, category }))
+      const allEvents = Object.keys(dataObj).flatMap(cat =>
+        dataObj[cat].map(e => ({ ...e, category: cat }))
       ).sort((a, b) => b.seconds - a.seconds);
 
-      const maxTime = d3.max(allEvents, d => d.seconds);
+      updateBarChart(allEvents, "All Events");
+    }
 
+    // Render bar chart
+    function updateBarChart(barData, categoryLabel) {
+      const barSvg = d3.select("#bar-chart-svg");
+      barSvg.selectAll("*").remove(); // clear previous
+
+      // Scales
+      const maxTime = d3.max(barData, d => d.seconds);
       const xScale = d3.scaleLinear()
         .domain([0, maxTime])
-        .range([0, 800 - 300]);
+        .range([0, 400]);  // narrower bars for better visibility
 
       const yScale = d3.scaleBand()
-        .domain(allEvents.map(d => d.name))
-        .range([0, 600 - 50])
-        .padding(0.1);
+        .domain(barData.map(d => d.name))
+        .range([0, 650])  // 600 - 50 => 550 px high
+        .padding(0.2);
 
+      /* 
+         Increase left margin from 200 to 250 
+         so labels have more space and won't get clipped 
+      */
       const barGroup = barSvg.append("g")
-        .attr("transform", `translate(200, 20)`);
+        .attr("transform", "translate(250, 20)");
 
       animationProgress = 0;
       const interval = setInterval(() => {
@@ -377,16 +302,28 @@
       }, 20);
 
       function updateBars() {
+        // Bars
         barGroup.selectAll("rect")
-          .data(allEvents)
+          .data(barData)
           .join("rect")
           .attr("y", d => yScale(d.name))
           .attr("height", yScale.bandwidth())
-          .attr("fill", d => colors[Object.keys(data).indexOf(d.category)])
+          .attr("fill", d => {
+            if (categoryLabel === "All Events") {
+              // Use color based on the original category
+              const idx = Object.keys(dataObj).indexOf(d.category);
+              return colors[idx];
+            } else {
+              // Single category
+              const idx = donutCategories.indexOf(categoryLabel);
+              return colors[idx];
+            }
+          })
           .attr("width", d => xScale(d.seconds) * animationProgress);
 
+        // Time labels
         barGroup.selectAll("text.time")
-          .data(allEvents)
+          .data(barData)
           .join("text")
           .attr("class", "time")
           .attr("x", d => xScale(d.seconds) * animationProgress + 5)
@@ -394,11 +331,12 @@
           .attr("dy", ".35em")
           .text(d => formatTime(d.seconds));
 
+        // Category/Event labels
         barGroup.selectAll("text.label")
-          .data(allEvents)
+          .data(barData)
           .join("text")
           .attr("class", "label")
-          .attr("x", -5)
+          .attr("x", -3)
           .attr("y", d => yScale(d.name) + yScale.bandwidth() / 2)
           .attr("dy", ".35em")
           .attr("text-anchor", "end")
@@ -409,39 +347,50 @@
       const legend = d3.select("#legend");
       legend.selectAll("*").remove();
 
-      const categories = Object.keys(data);
-      categories.forEach((category, i) => {
+      if (categoryLabel === "All Events") {
+        // Show all categories horizontally
+        Object.keys(dataObj).forEach((cat, i) => {
+          const legendItem = legend.append("div")
+            .style("display", "flex")
+            .style("align-items", "center");
+
+          // Some spacing to the right
+          legendItem.style("margin-right", "16px");
+
+          legendItem.append("div")
+            .style("background-color", colors[i])
+            .style("width", "18px")
+            .style("height", "18px")
+            .style("margin-right", "8px");
+
+          legendItem.append("span").text(cat);
+        });
+      } else {
+        // Single category
+        const idx = donutCategories.indexOf(categoryLabel);
         const legendItem = legend.append("div")
           .style("display", "flex")
-          .style("align-items", "center")
-          .style("margin-bottom", "4px");
+          .style("align-items", "center");
+
+        // Some spacing to the right
+        legendItem.style("margin-right", "16px");
 
         legendItem.append("div")
-          .style("background-color", colors[i])
+          .style("background-color", colors[idx])
           .style("width", "18px")
           .style("height", "18px")
           .style("margin-right", "8px");
 
-        legendItem.append("span")
-          .text(category);
-      });
+        legendItem.append("span").text(categoryLabel);
+      }
     }
 
-    function goBack() {
-      selectedCategory = null;
-
-      // Show Donut Container, Hide Bar Container & Legend
-      document.getElementById("center-button").style.display = "block";
-      document.getElementById("donut-container").style.display = "block";
-      document.getElementById("bar-container").style.display = "none";
-      document.getElementById("legend").style.display = "none";
-    }
-
+    // Format seconds => HH:MM:SS
     function formatTime(seconds) {
       const hrs = Math.floor(seconds / 3600);
       const mins = Math.floor((seconds % 3600) / 60);
       const secs = Math.floor(seconds % 60);
-      return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     }
   </script>
 </body>
